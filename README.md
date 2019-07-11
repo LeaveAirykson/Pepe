@@ -8,19 +8,14 @@ A hackable CLI helper tool written in bash.
 - [Uninstall](#uninstall)
 
 ## Install
-To install pepe download the latest release here: [Download Pepe](https://github.com/LeaveAirykson/Pepe/archive/master.zip) and unzip the folder in your user home folder. Alternatively you can download it via `curl`.
+To install pepe download the latest release here: [Download Pepe](https://github.com/LeaveAirykson/Pepe/archive/master.zip) and run the install script.
 
 ```bash
-# download via curl
-curl https://github.com/LeaveAirykson/Pepe/archive/master.zip ~/pepe.zip && unzip pepe.zip
-
-# Go to downloaded pepe folder
-cd ~/pepe
-
 # run install script
 . install.sh
 ```
-## Commands
+
+## Usage
 Pepe on its own does very little. It actually just executes bash scripts that are located inside the `~/pepe/commands` folder.
 
 If you omit any option to the `pepe` command it will show you some usage information and the available commands.
@@ -45,3 +40,12 @@ The install script will place a symlink inside your `~/bin/` folder. To uninstal
 rm ~/bin/pepe
 rm -rf ~/pepe
 ```
+
+## Changelog
+
+### v1.1.0
+- Changed install routine so no git clone is needed and the pepe folder will be placed in users home folder.
+- Updated README.md to clear up installation logic.
+
+### v1.0.0
+Initial release
