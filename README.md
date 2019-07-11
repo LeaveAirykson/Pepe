@@ -43,6 +43,9 @@ rm -rf ~/pepe
 
 ## Changelog
 
+### v1.1.1
+- Fixe issue with install script using wrong parameters for verbose option.
+
 ### v1.1.0
 - Changed install routine so no git clone is needed and the pepe folder will be placed in users home folder.
 - Updated README.md to clear up installation logic.
