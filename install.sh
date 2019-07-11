@@ -1,6 +1,13 @@
 #!/bin/bash
 
-DIR=$(dirname "${BASH_SOURCE[0]}")
-DIR=$(realpath "${DIR}")
+echo -e "Installing pepe in your home folder...\n"
 
-ln -s "$DIR/pepe" "$HOME/bin/pepe"
+mkdir -v "$HOME"/pepe
+cp --verbose pepe "$HOME"/pepe/
+cp --verbose -R commands "$HOME"/pepe/
+
+ln -sv "$HOME/pepe/pepe" "$HOME/bin/pepe"
+
+echo -e "\npepe successfully installed!\n"
+
+echo "You can now delete this directory."
