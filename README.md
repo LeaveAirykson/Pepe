@@ -2,10 +2,9 @@
 A hackable CLI helper tool written in bash.
 
 - [Install](#install)
-- [Commands](#commands)
-- [Configuration](#configuration)
-- [Variables](#variables)
+- [Usage](#usage)
 - [Uninstall](#uninstall)
+- [Changelog](#changelog)
 
 ## Install
 To install pepe download the latest release here: [Download Pepe](https://github.com/LeaveAirykson/Pepe/archive/master.zip) and run the install script.
@@ -44,7 +43,7 @@ rm -rf ~/pepe
 ## Changelog
 
 ### v1.1.1
-- Fixe issue with install script using wrong parameters for verbose option.
+- Fixed issue with install script using wrong parameters for verbose option.
 
 ### v1.1.0
 - Changed install routine so no git clone is needed and the pepe folder will be placed in users home folder.
