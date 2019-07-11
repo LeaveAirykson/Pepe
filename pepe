@@ -1,0 +1,84 @@
+#!/bin/bash
+# shellcheck disable=SC1090,SC1091,SC2034
+# ==================================
+# COLORS
+# ==================================
+# terminal formats
+bold="\033[1m"
+red="\033[31m"
+green="\033[32m"
+yellow="\033[33m"
+normal="\033[0m"
+
+# ==================================
+# CONFIG
+# ==================================
+# config path
+CONFIGFILE="$HOME/pepe.conf"
+PEPEPATH="$(dirname "$(readlink "$0")")"
+VHOSTPATH="/usr/local/etc/httpd/vhosts"
+SITESPATH="$HOME/Sites"
+COMMANDSPATH="$PEPEPATH/commands"
+TOPDOMAIN="loc"
+ERROR=false
+MESSAGE=''
+
+# create a default pepe.conf if it
+# does not exist yet
+if [ ! -f "$CONFIGFILE" ]; then
+
+    # create empty file
+    touch "$CONFIGFILE"
+
+    # add defaults to it
+    {
+        echo "VHOSTPATH=\"$VHOSTPATH\""
+        echo "SITESPATH=\"$SITESPATH\""
+        echo "TOPDOMAIN=\"$TOPDOMAIN\""
+    } >> "$CONFIGFILE"
+fi
+
+# load our config
+source "$CONFIGFILE"
+
+# grep the command and arguments
+COMMAND=$1
+
+# ==================================
+# HELP
+# ==================================
+function showhelp() {
+    echo ""
+    echo -e "${yellow}Usage${normal}"
+    echo "pepe [COMMAND] [[OPTIONS]...]"
+    echo ""
+    echo -e "${yellow}Available commands${normal}"
+
+    for file in "$COMMANDSPATH"/*; do
+        filename="$(basename "$file")"
+        descline="$(grep "\@desc" "$file" | head -n1)"
+        optionline="$(grep "\@option" "$file" | head -n1)"
+        desc="${descline/\# \@desc /}"
+        optiondesc="${optionline/\# \@option /}"
+
+        echo -e "${bold}$filename${normal} $optiondesc\n$desc\n"
+    done
+}
+
+# ==================================
+# COMMAND OPTION
+# ==================================
+
+if [ -f "$COMMANDSPATH/$COMMAND" ]; then
+    source "$COMMANDSPATH/$COMMAND"
+    $COMMAND "$@"
+
+else
+    showhelp;
+fi
+
+if $ERROR ; then
+    echo -e "${red}$MESSAGE${normal}"
+else
+    echo -e "${green}$MESSAGE${normal}"
+fi

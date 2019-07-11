@@ -1,0 +1,49 @@
+#!/bin/bash
+# @desc Helps creating custom commands.
+# @option [NAME]
+# shellcheck disable=SC2034,SC2181,SC2154
+#
+function create-command() {
+    echo -e "\n${bold}Create custom command${normal}"
+
+    if  [[ -z "$2" ]] ; then
+        read -r -p "Name of the command (no whitespace): " COMMANDNAME
+    else
+        COMMANDNAME=$2
+    fi
+
+    if [[ -n "$COMMANDNAME" ]] ; then
+        if [ -f "$COMMANDSPATH/$COMMANDNAME" ]; then
+            ERROR=true
+            MESSAGE="A command with this name already exist!"
+        else
+
+            read -r -p "Description: " DESCRIPTION
+            read -r -p "Options: " OPTIONS
+
+            touch "$COMMANDSPATH/$COMMANDNAME"
+            {
+                echo "#!/bin/bash"
+                echo -e "# @desc $DESCRIPTION"
+
+                if [[ -n "$OPTIONS" ]]; then
+                    echo -e "# @option $OPTIONS"
+                fi
+
+                echo "function $COMMANDNAME() {"
+                echo -e "\t# start your logic here"
+                echo "}"
+            } >> "$COMMANDSPATH/$COMMANDNAME"
+
+            chmod +x "$COMMANDSPATH/$COMMANDNAME"
+
+            if [ $? -eq 0 ]; then
+                MESSAGE="Success in creating $COMMANDSPATH/$COMMANDNAME."
+
+            else
+                ERROR=true
+                MESSAGE="Error occured while trying to create custom config file."
+            fi
+        fi
+    fi
+}
