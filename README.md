@@ -49,6 +49,9 @@ pepe uninstall
 
 ## Changelog
 
+### v1.2.1
+- Fix update command not placing new executable in right location
+
 ### v1.2.0
 - Refactored pepe into a single script file.
 

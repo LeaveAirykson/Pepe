@@ -14,7 +14,7 @@ PEPEPATH="$(dirname "$(readlink "$0")")"
 COMMANDSPATH="$PEPEPATH/commands"
 COMMAND=$1
 PEPEURL="https://raw.githubusercontent.com/LeaveAirykson/Pepe/refs/heads/master/pepe"
-VERSION="1.2.0"
+VERSION="1.2.1"
 
 function showhelp() {
     echo -e "${yellow}Usage${normal}"
@@ -103,8 +103,7 @@ function uninstall() {
 }
 
 function update() {
-    wget -O pepe.download.sh -P /tmp "$PEPEURL"
-    cp /tmp/pepe.download.sh "$HOME/pepe/pepe"
+    wget -q --show-progress -O "$HOME/pepe/pepe" "$PEPEURL"
     chmod a+x "$HOME/pepe/pepe"
 
     echo -e "\npepe successfully updated!"
