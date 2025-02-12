@@ -14,7 +14,7 @@ PEPEPATH="$(dirname "$(readlink "$0")")"
 COMMANDSPATH="$PEPEPATH/commands"
 COMMAND=$1
 PEPEURL="https://raw.githubusercontent.com/LeaveAirykson/Pepe/refs/heads/master/pepe"
-VERSION="1.2.2"
+VERSION="1.2.3"
 
 function showhelp() {
     echo -e "${yellow}Usage${normal}"
@@ -65,7 +65,7 @@ function create-command() {
                     echo -e "# @option $OPTIONS"
                 fi
 
-                echo -e "\t# start your logic here"
+                echo -e "# start your logic here"
                 
             } >> "$COMMANDSPATH/$COMMANDNAME"
 
@@ -128,7 +128,7 @@ case "$COMMAND" in
         ;;
     *)
         if [ -f "$COMMANDSPATH/$COMMAND" ]; then
-            "$COMMANDSPATH/$COMMAND" "$@"
+            "$COMMANDSPATH/$COMMAND" "${@:2}"
         else
             showhelp
         fi
