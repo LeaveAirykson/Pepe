@@ -1,84 +1,137 @@
 #!/bin/bash
-# shellcheck disable=SC1090,SC1091,SC2034
-# ==================================
-# COLORS
-# ==================================
-# terminal formats
+# shellcheck disable=SC1090,SC1091,SC2034,SC2181
+
+set -e 
+set -o pipefail
+
 bold="\033[1m"
 red="\033[31m"
 green="\033[32m"
 yellow="\033[33m"
 normal="\033[0m"
 
-# ==================================
-# CONFIG
-# ==================================
-# config path
-CONFIGFILE="$HOME/pepe.conf"
 PEPEPATH="$(dirname "$(readlink "$0")")"
-VHOSTPATH="/usr/local/etc/httpd/vhosts"
-SITESPATH="$HOME/Sites"
 COMMANDSPATH="$PEPEPATH/commands"
-TOPDOMAIN="loc"
-ERROR=false
-MESSAGE=''
-
-# create a default pepe.conf if it
-# does not exist yet
-if [ ! -f "$CONFIGFILE" ]; then
-
-    # create empty file
-    touch "$CONFIGFILE"
-
-    # add defaults to it
-    {
-        echo "VHOSTPATH=\"$VHOSTPATH\""
-        echo "SITESPATH=\"$SITESPATH\""
-        echo "TOPDOMAIN=\"$TOPDOMAIN\""
-    } >> "$CONFIGFILE"
-fi
-
-# load our config
-source "$CONFIGFILE"
-
-# grep the command and arguments
 COMMAND=$1
+PEPEURL="https://raw.githubusercontent.com/LeaveAirykson/Pepe/refs/heads/master/pepe"
+VERSION="1.2.0"
 
-# ==================================
-# HELP
-# ==================================
 function showhelp() {
-    echo ""
     echo -e "${yellow}Usage${normal}"
     echo "pepe [COMMAND] [[OPTIONS]...]"
     echo ""
     echo -e "${yellow}Available commands${normal}"
 
-    for file in "$COMMANDSPATH"/*; do
-        filename="$(basename "$file")"
-        descline="$(grep "\@desc" "$file" | head -n1)"
-        optionline="$(grep "\@option" "$file" | head -n1)"
-        desc="${descline/\# \@desc /}"
-        optiondesc="${optionline/\# \@option /}"
+    echo -e "${bold}version, v${normal} [command]\nShow current version\n"
+    echo -e "${bold}create-command, c${normal} [command]\nHelps creating custom commands\n"
 
-        echo -e "${bold}$filename${normal} $optiondesc\n$desc\n"
-    done
+    if [ -d "$COMMANDSPATH" ] && [ "$(ls -A "$COMMANDSPATH")" ]; then
+        for file in "$COMMANDSPATH"/*; do
+            filename="$(basename "$file")"
+            descline="$(grep "\@desc" "$file" | head -n1)"
+            optionline="$(grep "\@option" "$file" | head -n1)"
+            desc="${descline/\# \@desc /}"
+            optiondesc="${optionline/\# \@option /}"
+
+            echo -e "${bold}$filename${normal} $optiondesc\n$desc\n"
+        done
+    fi
 }
 
-# ==================================
-# COMMAND OPTION
-# ==================================
+function create-command() {
+    echo -e "\n${bold}Create custom command${normal}"
 
-if [ -f "$COMMANDSPATH/$COMMAND" ]; then
-    source "$COMMANDSPATH/$COMMAND"
-    $COMMAND "$@"
+    if  [[ -z "$2" ]] ; then
+        read -r -p "Name of the command (no whitespace): " COMMANDNAME
+    else
+        COMMANDNAME=$2
+    fi
 
-else
-    showhelp;
-fi
+    if [[ -n "$COMMANDNAME" ]] ; then
+        if [ -f "$COMMANDSPATH/$COMMANDNAME" ]; then
+            ERROR=true
+            MESSAGE="A command with this name already exist!"
+        else
 
-if $ERROR ; then
-    echo -e "${red}$MESSAGE${normal}"
-else
-    echo -e "${green}$MESSAGE${normal}"
-fi
+            read -r -p "Description: " DESCRIPTION
+            read -r -p "Usage: pepe $COMMANDNAME " OPTIONS
+
+            touch "$COMMANDSPATH/$COMMANDNAME"
+            {
+                echo "#!/bin/bash"
+                echo -e "# @desc $DESCRIPTION"
+
+                if [[ -n "$OPTIONS" ]]; then
+                    echo -e "# @option $OPTIONS"
+                fi
+
+                echo -e "\t# start your logic here"
+                
+            } >> "$COMMANDSPATH/$COMMANDNAME"
+
+            chmod +x "$COMMANDSPATH/$COMMANDNAME"
+
+            if [ $? -eq 0 ]; then
+                MESSAGE="Success in creating $COMMANDSPATH/$COMMANDNAME."
+
+            else
+                ERROR=true
+                MESSAGE="Error occured while trying to create custom config file."
+            fi
+        fi
+    fi
+}
+
+function install() {
+    if [ -d "$HOME/pepe" ]; then
+        echo -e "pepe seems to be already installed. If you want to update run: pepe update".
+        exit 0
+    fi
+
+    mkdir -vp "$HOME/pepe/commands"
+    cp -v pepe "$HOME/pepe/pepe"
+    ln -svf "$HOME/pepe/pepe" "$HOME/bin/pepe"
+
+    echo -e "\npepe successfully installed!"
+}
+
+function uninstall() {
+    rm -v "$HOME/bin/pepe"
+    rm -rvf "$HOME/pepe"
+
+    echo -e "\npepe successfully uninstalled!"
+}
+
+function update() {
+    wget -O pepe.download.sh -P /tmp "$PEPEURL"
+    cp /tmp/pepe.download.sh "$HOME/pepe/pepe"
+    chmod a+x "$HOME/pepe/pepe"
+
+    echo -e "\npepe successfully updated!"
+}
+
+
+case "$COMMAND" in
+    version|-v|--v|v)
+        echo "$VERSION"
+        ;;
+    create-command|c|-c)
+        create-command "$@"
+        ;;
+    install)
+        install
+        ;;
+    update)
+        update
+        ;;
+    uninstall)
+        uninstall
+        ;;
+    *)
+        if [ -f "$COMMANDSPATH/$COMMAND" ]; then
+            "$COMMANDSPATH/$COMMAND" "$@"
+        else
+            showhelp
+        fi
+        ;;
+esac
