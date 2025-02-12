@@ -49,6 +49,9 @@ pepe uninstall
 
 ## Changelog
 
+### v1.2.2
+- Fix user prompts not supporting arrow keys
+
 ### v1.2.1
 - Fix update command not placing new executable in right location
 

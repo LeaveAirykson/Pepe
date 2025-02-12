@@ -14,7 +14,7 @@ PEPEPATH="$(dirname "$(readlink "$0")")"
 COMMANDSPATH="$PEPEPATH/commands"
 COMMAND=$1
 PEPEURL="https://raw.githubusercontent.com/LeaveAirykson/Pepe/refs/heads/master/pepe"
-VERSION="1.2.1"
+VERSION="1.2.2"
 
 function showhelp() {
     echo -e "${yellow}Usage${normal}"
@@ -22,8 +22,8 @@ function showhelp() {
     echo ""
     echo -e "${yellow}Available commands${normal}"
 
-    echo -e "${bold}version, v${normal} [command]\nShow current version\n"
-    echo -e "${bold}create-command, c${normal} [command]\nHelps creating custom commands\n"
+    echo -e "${bold}version${normal}\nShow current version\n"
+    echo -e "${bold}create${normal} [command]\nHelps creating custom commands\n"
 
     if [ -d "$COMMANDSPATH" ] && [ "$(ls -A "$COMMANDSPATH")" ]; then
         for file in "$COMMANDSPATH"/*; do
@@ -42,7 +42,7 @@ function create-command() {
     echo -e "\n${bold}Create custom command${normal}"
 
     if  [[ -z "$2" ]] ; then
-        read -r -p "Name of the command (no whitespace): " COMMANDNAME
+        read -rep "Name of the command (no whitespace): " COMMANDNAME
     else
         COMMANDNAME=$2
     fi
@@ -53,8 +53,8 @@ function create-command() {
             MESSAGE="A command with this name already exist!"
         else
 
-            read -r -p "Description: " DESCRIPTION
-            read -r -p "Usage: pepe $COMMANDNAME " OPTIONS
+            read -rep "Description: " DESCRIPTION
+            read -rep "Usage: pepe $COMMANDNAME " OPTIONS
 
             touch "$COMMANDSPATH/$COMMANDNAME"
             {
@@ -111,10 +111,10 @@ function update() {
 
 
 case "$COMMAND" in
-    version|-v|--v|v)
+    version|-v|v|--v)
         echo "$VERSION"
         ;;
-    create-command|c|-c)
+    create|c)
         create-command "$@"
         ;;
     install)
